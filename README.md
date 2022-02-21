@@ -10,8 +10,9 @@ pandas
 - 01_valida_verifica_url.py: main program
 - validate_url.py: validazione formale url
 - dati_comuni.py: qualche costante
+- controllo.sh: script per lanciare in parallelo su più categorie di url i controlli di rete
 
-- file con i risultati della validazione
+- url.verficati.zip: file con i risultati della validazione
 
 # Descrizione programma
 Si trava nel commento iniziale di 01_valida_verifica_url.py
