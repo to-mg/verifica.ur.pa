@@ -12,7 +12,8 @@ https://indicepa.gov.it/ipa-dati/dataset/categorie-enti
 La validazione è fatta in due passaggi:
 
 1) verifica formale degli url e tentativo di correzione
-2) verifica di connettività usando requests.get() con la gestione di alcuni
+2) controlli di rete con la verifica di connettività usando
+   requests.get() e con la gestione di alcuni
    dei codici di errore
 
 ### verifica formale degli url e tentativo di correzione
@@ -46,7 +47,8 @@ con l'url originale
 
 Sono rimossi le righe con url duplicati e con url mancante
 
-### verifica di connettività usando requests.get() con la gestione di alcuni
+### controlli di rete con la verifica di connettività usando
+   requests.get() e con la gestione di alcuni
    dei codici di errore
 
 Questo passaggio è molto più lento, ma visto che il carico di CPU è basso
@@ -76,12 +78,14 @@ Ho lanciato il programma in con le opzioni -v e -n
 (validazione di tutti gli url)
 con tempo_attesa 5 secondi e in circa tre ore
 ha esaminato tutti gli url
-girando su TV box con Celeron J3455 (CPU che più entry level non si può)
+girando su una TV box con Celeron J3455 (CPU che più entry level non si può)
 con ubuntu.
 
 In un secondo giro con timeout 20 e con verifica dei soli url
 errati nel giro precedente sono saltati fuori circa 3800 siti
-andati in errore con tiemout 5 secondi
+andati in errore con timeout 5 secondi. 
+
+Sembra quindi che vi siano molti siti abbastanza lenti nella risposta.
 """
 import argparse
 import locale
