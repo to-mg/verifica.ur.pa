@@ -7,7 +7,7 @@ https://indicepa.gov.it/ipa-dati/dataset/enti
 pandas
 
 # Elenco file
-- 01_valida_verifica_url.py: main program
+- 01_valida_verifica_url.py: programma per i controlli formali e di rete
 - validate_url.py: validazione formale url
 - dati_comuni.py: qualche costante
 - controllo.sh: script per lanciare in parallelo su più categorie di url i controlli di rete
