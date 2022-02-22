@@ -1,0 +1,37 @@
+Le tracce di GA quindi sono:
+1) la presenza di questi url nella pagina
+# analytics 
+https://www.google-analytics.com/analytics.js
+# tag manager
+https://www.googletagmanager.com/gtag/js
+# tag manager no script
+https://www.googletagmanager.com/ns.html
+
+2) la presenza di una coda associata a ga.
+
+il contenuto della coda si ottiene dalla funzione js ga.getAll() 
+
+Andrebbe anche verificato che window.GoogleAnalyticsObject non ridefinisca ga
+
+3) la presenza di cookies con il nome:
+_ga
+_gid
+_ga_*
+_gac_gb_* 
+_gat 
+_gac 
+
+__utma
+__utmb
+__utmc
+__utmt
+__utmv
+__utmz
+
+4) la presenza di un dataLayer
+il contenuto della coda dataLayer è nella variabile js dataLayer
+
+Andrebbe anche verificato che il nome della variabile non sia cambiato
+
+5) mascheramento IP
+si può verificare che l'IP del client sia reso anonimo, sia pure con tutti i limiti del caso, visto che l'operazione è fatta sui server di google e viene azzerato solo l'ultimo ottetto dell'indirizzo IP.

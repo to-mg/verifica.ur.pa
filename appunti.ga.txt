@@ -1,0 +1,494 @@
+https://developers.google.com/analytics/devguides/collection/analyticsjs
+
+#### google analytics
+add GA to the page 
+
+# 1) google analytics tag
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-XXXXX-Y', 'auto');
+ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+it defines ga() function 
+   create a tracker
+   asks to send a pageview to google 
+
+# 2) async tag 
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-XXXXX-Y', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
+
+# 3) via tag manager and datalayer
+
+### ga() function
+It manages a queue of commands related to GA to be executed
+the queue is kept in variable ga.q
+
+to add commands to the queue
+ga(command, list of params)
+# command to create a tracker
+ga('create', 'UA-XXX-Y ', 'auto')
+# command to send infos to GA when the event occurs
+ga('send', 'pageview')
+
+### create trackers
+you must specify at least
+- tracking id (as configured in ga4 admin console)
+- cookie domain , 'auto' means automatic domain cfg, if site www.aa.com, domain is .aa.com 
+
+trackername is optional
+
+## infos that can be specified
+
+# User ID
+User ID enables the analysis of groups of sessions, across devices, using a unique, persistent, and non-personally identifiable ID string representing a user
+Provide your own unique, persistent, and non-personally identifiable string ID to represent each signed-in user.
+
+Set the User ID on the tracker:
+ga('create', 'UA-XXXXX-Y', 'auto', {
+  userId: USER_ID
+});
+ga('send', 'pageview');
+
+### get and set fields of trackers
+via ready callbacks
+
+The ready callback is a function that you can add to the ga() command queue. 
+The function will be invoked as soon as the analytics.js library is fully loaded, following queue insertion order 
+
+# getByName
+If you know the name of the tracker you want to access, you can do so using the getByName method:
+
+ga('create', 'UA-XXXXX-Y', 'auto', 'myTracker');
+ga(function() {
+  // Logs the "myTracker" tracker object to the console.
+  console.log(ga.getByName('myTracker'));
+});
+
+# getAll
+To get an array of all created trackers, use the getAll method:
+
+ga(function() {
+  // Logs an array of all tracker objects.
+  console.log(ga.getAll());
+});
+
+# get data in tracker 
+ga(function(tracker) {
+  // Logs the trackers name.
+  // (Note: default trackers are given the name "t0")
+  console.log(tracker.get('name'));
+  // Logs the client ID for the current user.
+  console.log(tracker.get('clientId'));
+  // Logs the URL of the referring site (if available).
+  console.log(tracker.get('referrer'));
+});
+
+it is possible to set values in trackers 
+ga('myTracker.set', 'page', '/about');
+
+### sending data to GA
+ga('send', 'pageview');
+
+ga('[trackerName.]send', [hitType], [...fields], [fieldsObject]);
+
+depending on hitType other specific fields must be provided
+
+# default tracker (no name)
+ga('send', {
+  hitType: 'event',
+  eventCategory: 'Video',
+  eventAction: 'play',
+  eventLabel: 'cats.mp4'
+});
+or 
+ga('send', 'event', 'Video', 'play', 'cats.mp4');
+
+# named tracker 
+ga('myTracker.send', 'event', 'Video', 'play', 'cats.mp4');
+
+it is possible to fire a callback after the confirmation of the sending of data 
+
+# send data on page view 
+ga('send', 'pageview', [page], [fieldsObject]);
+
+title 		text 	the title of the page (e.g. homepage)
+location 	text 	URL of the page.
+page 		  text 	The path portion of a URL. This value should start with a slash (/) character.
+
+# send data on specific event
+ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
+ga('send', 'event', 'Videos', 'play', 'Fall Campaign');
+or
+ga('send', {
+  hitType: 'event',
+  eventCategory: 'Videos',
+  eventAction: 'play',
+  eventLabel: 'Fall Campaign'
+});
+
+# social interaction
+ga('send', 'social', [socialNetwork], [socialAction], [socialTarget], [fieldsObject]);
+ga('send', 'social', 'Facebook', 'like', 'http://mydomain.com');
+
+# app/screen
+Screens in Google Analytics represent content users are viewing within an app.  
+Measuring screen views allows you to see which content is being viewed most by your users, 
+and how are they are navigating between different pieces of content.
+
+ga('send', 'screenview', {
+  'appName': 'myAppName',
+  'screenName': 'Home'
+});
+
+# transport mechanisms
+The three options are 
+'image' (using an Image object), 
+'xhr' (using an XMLHttpRequest object),
+'beacon' using the new navigator.sendBeacon method.
+
+ga('set', 'transport', 'beacon');
+
+### user plugin
+Plugins are scripts that enhance the functionality of analytics.js to aid in measuring user interaction
+
+loaded with require
+ga('[trackerName.]require', pluginName, [pluginOptions]);
+
+
+### debugging analytics
+changing the URL in the JavaScript tag 
+from https://www.google-analytics.com/analytics.js 
+to   https://www.google-analytics.com/analytics_debug.js:
+
+there is an extension for debugging
+Google Analytics Debugger Chrome extension
+
+### cookies 
+By default, analytics.js uses a single, first-party cookie named _ga to store the Client ID, but the cookie's name, domain, and expiration time can all be customized. 
+Other cookies created by analytics.js include _gid, AMP_TOKEN and _gac_<property-id>. These cookies store other randomly generated ids and campaign information about the user.
+
+# Configuring cookie field settings
+ga('create', 'UA-XXXXX-Y', {
+  'cookieName': 'gaCookie',
+  'cookieDomain': 'blog.example.co.uk',
+  'cookieExpires': 60 * 60 * 24 * 28  // Time in seconds.
+  'cookieUpdate': 'false',
+  'cookieFlags': 'SameSite=None; Secure',
+});
+
+cookieExpires
+Every time a hit is sent to Google Analytics, the cookie expiration time is updated to be the current time plus the value of the cookieExpires field.
+
+cookieUpdate
+When cookieUpdate is set to true (the default value), analytics.js will update cookies on each page load. 
+When set to false, cookies are not updated on each page load. This has the effect of cookie expiration being relative to the first time a user visited the site.
+
+Getting the Client ID from the cookie
+ga(function(tracker) {
+  var clientId = tracker.get('clientId');
+});
+
+# gtag.js sets the following cookies:
+
+Cookie name 	        Default expiration time 	  Description
+_ga 	                   2 years 	                Used to distinguish users.
+_gid 	                  24 hours 	                Used to distinguish users.
+_ga_<container-id> 	     2 years 	                Used to persist session state.
+_gac_gb_<container-id> 	90 days 	                Contains campaign related information. Useful when linking Google Analytics and Google Ads accounts
+
+# gtag.js and analytics.js (Universal Analytics)
+The analytics.js JavaScript library or the gtag.js JavaScript library can be used for Universal Analytics, previous version of GA
+Cookie Name 	Default expiration time 	Description
+_ga 				  2 years 	                Used to distinguish users.
+_gid 				  24 hours 	                Used to distinguish users.
+_gat 				  1 minute 	                Used to throttle request rate. If Google Analytics is deployed via Google Tag Manager, this cookie will be named _dc_gtm_<property- id>.
+AMP_TOKEN 		0 seconds to 1 year 	    Contains a token that can be used to retrieve a Client ID from AMP Client ID service. 
+                                        Other possible values indicate opt-out, inflight request or an error retrieving a Client ID from AMP Client ID service.
+_gac_<property-id> 		90 days 	        Contains campaign related information for the user. 
+
+# ga.js 
+By default, this library sets cookies on the domain specified in the document.host browser property and sets the cookie path to the root level (/). This library sets the following cookies
+__utma
+__utmt
+__utmb
+__utmc
+__utmz
+__utmv
+
+# urchin.js 
+very old library
+it sets the same cookies as ga.js 
+
+### renaminig ga
+
+name of global ga object is kept in window.GoogleAnalyticsObject
+
+# 1) in load script 
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','analytics');
+
+analytics('create', 'UA-XXXXX-Y', 'auto');
+analytics('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
+ga becomes analytics
+
+# 2) in the code
+window.GoogleAnalyticsObject = 'analytics';
+
+### anonymize IP
+To anonymize the IP address for all hits sent from a single tracker, use the set command to set the anonymizeIp field to true on the tracker:
+
+ga('set', 'anonymizeIp', true);
+
+https://support.google.com/analytics/answer/2763052?hl=en
+
+When a customer of Analytics requests IP address anonymization, Analytics anonymizes the address as soon as technically feasible.
+The IP anonymization feature in Analytics sets the last octet of IPv4 user IP addresses 
+and the last 80 bits of IPv6 addresses to zeros in memory shortly after being sent to Google Analytics.
+The full IP address is never written to disk in this case.
+
+Analytics provides the anonymize_ip feature (gtag('config', '<GA_MEASUREMENT_ID>', { 'anonymize_ip': true }) in the gtag.js library) 
+to allow website owners to request that all of their users' IP addresses are anonymized within the product. 
+
+When the Analytics JavaScript runs a function from the function queue that triggers data to be sent to Google Analytics 
+(this function is typically gtag('config', '<GA_MEASUREMENT_ID>' in the gtag.js library), 
+it sends the data as URL parameters attached to an HTTP request for http://www.google-analytics.com/collect. 
+If the anonymization function has been called prior to the page tracking function, an additional parameter is added to the pixel request. 
+The IP anonymization parameter looks like this:
+
+&aip=1
+
+The Analytics Collection Network is the set of servers that provide two main services: 
+- the serving of gtag.js (the Analytics JavaScript) 
+- the collection of data sent via requests for /collect
+
+
+### User Opt-out
+The analytics.js library includes a window property that, when set to true, disables analytics.js from sending data to Google Analytics.
+To disable measurement, set the following window property to true:
+window['ga-disable-UA-XXXXX-Y'] = true;
+
+This window property must be set before any calls to the ga() command queue are made, and it must be set on each page for which you want to disable GA. 
+If the property is not set or set to false then measurement will work as usual.
+
+If you use multiple trackers on a page with multiple web property IDs, 
+you must set the equivalent window['ga-disable-UA-XXXXXX-Y'] variable to true for each web property to completely disable Google Analytics tracking on that page.
+
+#### google tag manager
+
+### install
+Copy the code below and paste it onto every page of your website.
+
+Paste this code as high in the <head> of the page as possible:
+
+<!-- Google Tag Manager -->
+<script> (function (w,d,s,1,i) {w[l]=w[1l]||[]sw{l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s) [0],
+j=d.createElement (s),dl=1!="dataLayer'?'&l='+1:'';}.async=true;j.src=
+"https: //www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+}) (window.document, 'script', 'dataLayer', 'GIM-NHKM6J4") ;</script>
+<!-- End Google Tag Manager -->
+
+Additionally, paste this code immediately after the opening <body> tag:
+
+<!-- Google Tag Manager (noscript) --> oO
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NHKM6J4"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+# custom web installation
+Add the following code so that it is as close to the opening <head> tag as possible on every page of your website. Replace GTM-XXXXXX with your container ID:
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+Next, add this code immediately after the opening <body> element on every page of your website. Replace GTM-XXXXXX with your container ID:
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+## install a data layer
+The data layer is an object used by Google Tag Manager and gtag.js to pass information to tags. 
+Events or variables can be passed via the data layer, and triggers can be set up based on the values of variables.
+
+a Google Tag Manager Data Layer is a JavaScript array that temporarily stores the information you need and 
+then Google Tag Manager uses that data in tag/triggers/variables. 
+Later that data can be transferred to other tools, like Google Analytics
+
+Put this code before Google Tag Manager block in head
+<script>
+window.dataLayer = window.dataLayer || [];
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+# installation in head with async script
+    <script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=UA-1592615-11&amp;l=dataLayer&amp;cx=c"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'UA-1592615-11', {
+            'custom_map': {
+                'dimension1': 'Search Term'
+            },
+            'anonymize_ip': true
+        });
+        gtag('config', 'UA-1592615-30 ', {
+            'custom_map': {
+                'dimension1': 'Search Term'
+            },
+            'anonymize_ip': true
+        });
+    </script>
+
+## rename dataLayer
+
+new name is myNewName
+<!-- Global site tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZZZZZZ&l=myNewName"></script>
+<script>
+  window.myNewName = window.myNewName || [];
+  function gtag(){myNewName.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZZZZZZ');
+</script>
+or
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','myNewName','GTM-XXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+# use new name
+<script>
+  myNewName = window.dataLayer || [];
+  myNewName.push({'variable_name': 'variable_value'});
+</script>
+
+## push data into dataLayer queue
+If a gtag() or dataLayer.push() call is made, the message is queued and then executed 
+
+Call dataLayer.push() when an event occurs.
+dataLayer.push({'event': 'event_name'});
+
+Call dataLayer.push() on button click 
+<button onclick="dataLayer.push({'event': 'login'});">Button 1</button>
+
+# push a generic variable 
+dataLayer.push({'color': 'red'});
+dataLayer.push({
+  'color': 'red',
+  'conversionValue': 50,
+  'event': 'customize'
+});
+
+# example of entries in dataLayer 
+{'0': 'js', '1': '2022-02-08T13:35:12.356Z'}
+{'0': 'config', '1': 'UA-1592615-11', '2': {'custom_map': {'dimension1': 'Search Term'}, 'anonymize_ip': True}}
+{'0': 'config', '1': 'UA-1592615-30 ', '2': {'custom_map': {'dimension1': 'Search Term'}, 'anonymize_ip': True}}
+{'gtm.start': 1644327312364, 'event': 'gtm.js', 'gtm.uniqueEventId': 6}
+{'event': 'gtm.dom', 'gtm.uniqueEventId': 7}
+{'event': 'gtm.load', 'gtm.uniqueEventId': 12}
+
+## events
+The dataLayer object uses an event key to initiate the sending of events.
+dataLayer.push({'event': 'event_name'});
+
+## data layer set the value of a variable
+dataLayer.push({'variable_name': 'variable_value'});
+
+### integration with GA and GTM
+## data 
+# Create a variable in dataLayer
+   <script>
+     window.dataLayer = window.dataLayer || [];
+     window.dataLayer.push [{
+       pricingPlan: 'Premium'
+     }];
+   </script>
+
+# Create a Data Layer Variable in Google Tag Manager
+   create pricingPlan variable
+
+# Create a custom dimension in Universal Analytics
+   create pricingPlan dimension
+  
+# Link GTM variable and UA dimension 
+
+## events
+create an event (registrationComplete) in dataLayer with a variable (Premium)
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({
+ 'event': 'registrationComplete',
+ 'plan': 'Premium'
+});
+
+# register event registrationComplete in GTM 
+# register variable plan in GTM 
+# create GA event registrationComplete 
+it  will send the event data to Google Analytics every time a registrationComplete is pushed to the Data Layer
+
+### Google Tag Manager with javascript disabled
+
+Insert this code in html body
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<noscript> should be placed in the <body> since <noscript> initiates an iFrame and iFrame is not supported in the <head>
+
+id may have also by something like UA-XXX
+
+# Custom Image tag
+
+Custom Image Tag is a non visible image used to send the data from your website to other tracking tools, e.g. Facebook Pixel, etc.
+The Tag is loaded via iFrame (which is created with help of <noscript> part of the GTM snippet).
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+The image’s URL must be different every time it is loaded so each time the image is downloaded and that’s where the Cache Buster comes in handy
+
+Cache Busting Query Parameter (gtmcb) is a function that returns a string of numbers every time a Custom Image Tag fires and adds it as a query parameter to Image URL, e.g. https://www.pixelreceiver.com/track?parameter1=usa&gtmcb=1199950751.
