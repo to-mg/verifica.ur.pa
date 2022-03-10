@@ -20,9 +20,15 @@ stringhe:
 TESTI_CONSENSO = ["accett", "ho capito", "consent"]
 
 Inoltre si verifica che il link non inizi con http, portando quindi
-potenzialmente su un altro sito
+potenzialmente su un altro sito.
+
+Per intercettare il caso in cui il click sul bottone o sul link porti
+a un altro nodo (ad esempio via javascript), si verifica che il nodo
+prima e dopo il click sia lo stesso.
+In caso di diversità, si torna all'url di prima del click
 """
 import sys
+from urllib.parse import urlparse
 
 # testi per esprimere consenso
 TESTI_CONSENSO = ["accett", "ho capito", "consent"]
@@ -97,15 +103,15 @@ def _cerca_link(driver, url):
 
 
 def click_bottone_consenso(driver):
-
+    url_pre_click = driver.current_url
+    nodo_pre_click = urlparse(driver.current_url).netloc
     # cerca bottone per accettazione di tutti i cookies
-    url = driver.current_url
     bottone_consenso = None
     esito_click = 0
     try:
-        bottone_consenso = _cerca_bottone(driver, url)
+        bottone_consenso = _cerca_bottone(driver, url_pre_click)
         if not bottone_consenso:
-            bottone_consenso = _cerca_link(driver, url)
+            bottone_consenso = _cerca_link(driver, url_pre_click)
     except Exception:
         print(("Errore in ricerca bottone consenso"))
         errore = str(sys.exc_info()[1]).split("\n")[0]
@@ -122,4 +128,11 @@ def click_bottone_consenso(driver):
             errore = str(sys.exc_info()[1]).split("\n")[0]
             print(errore)
             esito_click = 0
+        nodo_post_click = urlparse(driver.current_url).netloc
+    # selezionato bottone o link sbagliato e si è finiti su
+    # un altro nodo. Quindi si fa marcia indietro e si torna
+    # all'url precedente
+    if nodo_pre_click != nodo_post_click:
+        driver.get(url_pre_click)
+        esito_click = 0
     return esito_click
