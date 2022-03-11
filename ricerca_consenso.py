@@ -2,7 +2,7 @@
 Versione aggiornata ricerca bottone consenso:
 
 1) per il testo dei bottoni la ricerca è fatta su questa stringhe:
-"accett", "ho capito", "consent"
+"accetto", "accetta", "ho capito", "acconsent", "consenti"
 
 2) per i tag <a> sono selezionati quelli associati a una classe
    il cui nome contiene una delle stringhe indicati nel path
