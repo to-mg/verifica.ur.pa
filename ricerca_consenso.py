@@ -1,11 +1,11 @@
 """
-Versione aggirona ricerca bottone consenso:
+Versione aggiornata ricerca bottone consenso:
 
 1) per il testo dei bottoni la ricerca è fatta su questa stringhe:
-TESTI_CONSENSO = ["accett", "ho capito", "consent"]
+"accett", "ho capito", "consent"
 
 2) per i tag <a> sono selezionati quelli associati a una classe
-   che il cui nome contiene una delle stringhe indicati nel path
+   il cui nome contiene una delle stringhe indicati nel path
    XPath che segue
     "//a["
     "contains(@class, 'btn') or "
@@ -13,11 +13,13 @@ TESTI_CONSENSO = ["accett", "ho capito", "consent"]
     "contains(@class, 'button') or "
     "contains(@class, 'allow') or "
     "contains(@class, 'cookie') or "
-    "contains(@class, 'accept')"
+    "contains(@class, 'wordpress-gdpr-popup-agree') or "
+    "contains(@class, 'accept') or "
+    "not(@class)"
     "]"
-negli elementi selezionati i verfica se il teso contiene una di queste
+negli elementi selezionati si verifica se il testo contiene una di queste
 stringhe:
-TESTI_CONSENSO = ["accett", "ho capito", "consent"]
+"accetto", "accetta", "ho capito", "acconsent", "consenti"
 
 Inoltre si verifica che il link non inizi con http, portando quindi
 potenzialmente su un altro sito.
@@ -27,11 +29,12 @@ a un altro nodo (ad esempio via javascript), si verifica che il nodo
 prima e dopo il click sia lo stesso.
 In caso di diversità, si torna all'url di prima del click
 """
+
 import sys
 from urllib.parse import urlparse
 
 # testi per esprimere consenso
-TESTI_CONSENSO = ["accett", "ho capito", "consent"]
+TESTI_CONSENSO = ["accetto", "accetta", "ho capito", "acconsent", "consenti"]
 
 # classi di tag <a> associati a testi consenso
 XPATH_LINK = (
@@ -41,7 +44,9 @@ XPATH_LINK = (
     "contains(@class, 'button') or "
     "contains(@class, 'allow') or "
     "contains(@class, 'cookie') or "
-    "contains(@class, 'accept')"
+    "contains(@class, 'wordpress-gdpr-popup-agree') or "
+    "contains(@class, 'accept') or "
+    "not(@class)"
     "]"
 )
 
